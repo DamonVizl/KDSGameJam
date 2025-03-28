@@ -14,6 +14,10 @@ public class Fishing : MonoBehaviour
     [SerializeField] PlayerStateMachine _playerStateMachine; //reference to the player state machine, used to transition between states.
     [SerializeField] Transform _fishingRod;
 
+    //rigidbody for the float, it will be thrown out from the rod, based on the cast distance
+    [SerializeField] Rigidbody _floatRigidbody; 
+    //the transform to parent the float to, so it's always launched from the same position (tip of the rod)
+    [SerializeField] Transform _floatParentHomePosition; 
     float _minCastDistance = 10f;
     float _maxCastDistance = 100f;
     float _castDistance; // The distance the player can cast the fishing line
@@ -84,6 +88,7 @@ public class Fishing : MonoBehaviour
             await Awaitable.NextFrameAsync(); 
         }
         //TODO: do cast logic with the cast distance
+        CastFloat(CastDistance);
     }
     /// <summary>
     /// Interupts the casting process, this will stop the casting and return to the fishing state
@@ -92,7 +97,6 @@ public class Fishing : MonoBehaviour
     {
 
         // Stop casting
-        Debug.Log("Stopped casting");
         _cts?.Cancel();
        
         //lerp the fishing rod back over half a second
@@ -109,6 +113,15 @@ public class Fishing : MonoBehaviour
         //TODO: animate the fishing line going out
         _playerStateMachine.TransitionToState(PlayerState.Fishing);
     }
+
+    private async void CastFloat(float castDistance)
+    {
+        if(_floatRigidbody == null) {Debug.LogError("No float rigidbody assigned"); return;}
+        _floatRigidbody.gameObject.SetActive(true); //activate the float rigidbody
+        _floatRigidbody.transform.parent = null;
+        _floatRigidbody.AddForce((transform.forward + transform.up*0.2f) * castDistance, ForceMode.Impulse); //add force to the float rigidbody in the direction of the players forward direction and up a little bit to simulate the float going out.
+
+    }
     #endregion
     #region Recall
     //recalling the line before catching a fish. Will bring the line back in and take us back to the moving state
@@ -116,6 +129,10 @@ public class Fishing : MonoBehaviour
     {
         //TODO: animate the line coming back in
 
+        //recall the float
+        _floatRigidbody.transform.parent = _floatParentHomePosition; 
+        _floatRigidbody.transform.localPosition = Vector3.zero; //reset the position of the float to the home position
+        _floatRigidbody.gameObject.SetActive(false); 
         //return to the moving state
         _playerStateMachine.TransitionToState(PlayerState.Moving);
 
