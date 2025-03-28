@@ -9,14 +9,10 @@ public class InputManager : MonoBehaviour
     public static readonly string OnTheHook = "OnTheHook";
 
     [SerializeField] private PlayerInput _input;
-    private InputAction _castIA, _reelIA;
+    private InputAction _castIA, _recallIA, _reelIA;
 
     #region Events
-    public Action OnCastPressed;
-    public Action OnCastReleased; 
-
-    public Action OnReelPressed; 
-    public Action OnReelReleased;
+    public Action OnCastPressed, OnCastReleased,OnRecallPressed, OnReelPressed, OnReelReleased;
     #endregion
 
     void OnEnable()
@@ -41,6 +37,9 @@ public class InputManager : MonoBehaviour
         _castIA.performed += c => OnCastPressed?.Invoke();
         _castIA.canceled += c => OnCastReleased?.Invoke();
 
+        _recallIA = _input.actions["Recall"];
+        _recallIA.performed += c => OnRecallPressed?.Invoke();
+
         _reelIA = _input.actions["Reel"];
         _reelIA.performed += c => OnReelPressed?.Invoke();
         _reelIA.canceled += c => OnReelReleased?.Invoke();
@@ -51,6 +50,8 @@ public class InputManager : MonoBehaviour
     {
         _castIA.performed -= c => OnCastPressed?.Invoke();
         _castIA.canceled -= c => OnCastReleased?.Invoke();
+
+        _recallIA.performed -= c => OnRecallPressed?.Invoke();
 
         _reelIA.performed -= c => OnReelPressed?.Invoke();
         _reelIA.canceled -= c => OnReelReleased?.Invoke();
