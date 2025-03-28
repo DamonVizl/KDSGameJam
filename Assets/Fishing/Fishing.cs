@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Unity.VisualScripting.Antlr3.Runtime;
 using System.Threading;
 using System;
+using Codice.Client.Common.GameUI;
 
 /// <summary>
 /// Handles the fishing behaviour
@@ -11,6 +12,7 @@ public class Fishing : MonoBehaviour
 {
     [SerializeField] InputManager _inputManager; 
     [SerializeField] PlayerStateMachine _playerStateMachine; //reference to the player state machine, used to transition between states.
+    [SerializeField] Transform _fishingRod;
 
     float _minCastDistance = 10f;
     float _maxCastDistance = 100f;
@@ -36,24 +38,44 @@ public class Fishing : MonoBehaviour
     void SubToInputs()
     {
         _inputManager.OnCastPressed += StartCast;
+        _inputManager.OnRecallPressed += RecallLine; 
         _inputManager.OnCastReleased += EndCast;
+        _inputManager.OnReelPressed += ReelLine; 
+
     }
     void OnDisable()
     {
         _inputManager.OnCastPressed -= StartCast;
+        _inputManager.OnRecallPressed -= RecallLine;
         _inputManager.OnCastReleased -= EndCast;
+        _inputManager.OnReelPressed -= ReelLine; 
     }
 
+    #region Casting
     /// <summary>
     /// Starts the casting process, this will increment the cast distance over time and then
     /// call some cast logic (NYE)
     /// </summary>
     async void StartCast()
     {
+
         if(_playerStateMachine.GetCurrentState() != PlayerState.Moving) return; //shouldn't be required because of the action maps but added regardless.
         CastDistance = 10f;
         _cts?.Cancel();
         _cts = new CancellationTokenSource();
+
+        Quaternion initialRot = _fishingRod.localRotation; // get the initial rotation of the fishing rod
+        Quaternion targetRot = Quaternion.Euler(initialRot.eulerAngles.x, initialRot.eulerAngles.y, initialRot.eulerAngles.z + 30f); // rotate the fishing rod 30 degrees on the z axis
+        //lerp the fishing rod back over half a second
+        float timer = 0.0f;
+        float duration = 0.5f; // duration of the lerp
+        while(timer < duration)
+        {
+            timer += Time.deltaTime;
+            _fishingRod.localRotation = Quaternion.Lerp(initialRot, targetRot, timer / duration);
+            await Awaitable.NextFrameAsync(); //return to the main thread
+        }
+        
         while (!_cts.Token.IsCancellationRequested)
         {
             //increment the cast distacne over time, between the mix and max distance
@@ -66,11 +88,50 @@ public class Fishing : MonoBehaviour
     /// <summary>
     /// Interupts the casting process, this will stop the casting and return to the fishing state
     /// </summary>
-    void EndCast()
+    async void EndCast()
     {
+
         // Stop casting
         Debug.Log("Stopped casting");
         _cts?.Cancel();
+       
+        //lerp the fishing rod back over half a second
+         Quaternion initialRot = _fishingRod.localRotation; // get the initial rotation of the fishing rod
+        Quaternion targetRot = Quaternion.Euler(initialRot.eulerAngles.x, initialRot.eulerAngles.y, initialRot.eulerAngles.z - 30f); // rotate the fishing rod back to the original position
+        float timer = 0.0f;
+        float duration = 0.2f; // duration of the lerp
+        while(timer < duration)
+        {
+            timer += Time.deltaTime;
+            _fishingRod.localRotation = Quaternion.Lerp(initialRot, targetRot, timer / duration);
+            await Awaitable.NextFrameAsync(); //return to the main thread
+        }
+        //TODO: animate the fishing line going out
         _playerStateMachine.TransitionToState(PlayerState.Fishing);
     }
+    #endregion
+    #region Recall
+    //recalling the line before catching a fish. Will bring the line back in and take us back to the moving state
+    private void RecallLine()
+    {
+        //TODO: animate the line coming back in
+
+        //return to the moving state
+        _playerStateMachine.TransitionToState(PlayerState.Moving);
+
+    }
+
+    #endregion
+    #region Reeling
+    //reeling in the line when a fish is on the hook. We will either break the line or catch the fish to move back to the moving state
+
+    private void ReelLine()
+    {
+        //TODO: Animate the line reeling in
+
+        //TODO: Increase the 'tension' meter on the line
+
+        //bring the line in an incremental amount
+    }
+    #endregion
 }
