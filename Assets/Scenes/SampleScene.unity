@@ -498,6 +498,7 @@ MonoBehaviour:
   _camera: {fileID: 330585548}
   _cameraOffset: {x: 0, y: 0, z: -1}
   _moveSpeed: 5
+  _moveVector: {x: 0, y: 0}
 --- !u!4 &698912262
 Transform:
   m_ObjectHideFlags: 0
