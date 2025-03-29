@@ -3,13 +3,16 @@ using System.Threading.Tasks;
 using Unity.VisualScripting.Antlr3.Runtime;
 using System.Threading;
 using System;
+using System.Linq;
 using Codice.Client.Common.GameUI;
 
 /// <summary>
 /// Handles the fishing behaviour
 /// </summary>
+[RequireComponent(typeof(FishingLineRenderer))]
 public class Fishing : MonoBehaviour
 {
+    [SerializeField] FishingLineRenderer _fishingLineRenderer;
     [SerializeField] InputManager _inputManager; 
     [SerializeField] PlayerStateMachine _playerStateMachine; //reference to the player state machine, used to transition between states.
     [SerializeField] Transform _fishingRod;
@@ -40,9 +43,11 @@ public class Fishing : MonoBehaviour
     #endregion
     void Start()
     {
-      SubToInputs();
-     _initialRodRot = _fishingRod.localRotation; // get the initial rotation of the fishing rod
+        SubToInputs();
+        _initialRodRot = _fishingRod.localRotation; // get the initial rotation of the fishing rod
+        _fishingLineRenderer = GetComponent<FishingLineRenderer>();
     }
+    
     void SubToInputs()
     {
         _inputManager.OnCastPressed += StartCast;
@@ -130,6 +135,8 @@ public class Fishing : MonoBehaviour
         _floatRigidbody.transform.parent = null;
         _floatRigidbody.AddForce((transform.forward + transform.up*0.2f) * castDistance, ForceMode.Impulse); //add force to the float rigidbody in the direction of the players forward direction and up a little bit to simulate the float going out.
 
+        Debug.Log("Render line to :" + _floatRigidbody.transform.gameObject.name);
+        _fishingLineRenderer.AttachFishingLineToTransform(_floatRigidbody.transform);
     }
     #endregion
     #region Recall
