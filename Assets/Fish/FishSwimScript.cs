@@ -8,6 +8,7 @@ public class FishSwimScript : MonoBehaviour
 {
     [SerializeField] float _swimSpeed = 300.0f;
     [SerializeField] float _rotationSpeed = 1000.0f;
+    [SerializeField] float _bobSpeed = 3.0f;
     [SerializeField] float _noiseSpeed = 1f;
 
     [SerializeField] float _linearDragCoefficient = 10.0f;
@@ -29,7 +30,7 @@ public class FishSwimScript : MonoBehaviour
     Rigidbody _rb;   
 
     private float _noiseOffsetYaw;
-    private float _noiseOffsetPitch;
+    private float _noiseOffsetY;
     private float _noiseOffsetThrust;
 
     const float WATER_LEVEL = 0f;
@@ -43,7 +44,7 @@ public class FishSwimScript : MonoBehaviour
         _rb = GetComponent<Rigidbody>();
 
         _noiseOffsetYaw = Random.Range(0f, 1000f);
-        _noiseOffsetPitch = Random.Range(0f, 1000f);
+        _noiseOffsetY = Random.Range(0f, 1000f);
         _noiseOffsetThrust = Random.Range(0f, 1000f);
 
         _rb.maxLinearVelocity = 20.0f;
@@ -79,7 +80,7 @@ public class FishSwimScript : MonoBehaviour
 
             float time = Time.time * _noiseSpeed;
             float noiseYaw = Mathf.PerlinNoise(time + _noiseOffsetYaw, _noiseOffsetYaw) - 0.5f;
-            float noisePitch = Mathf.PerlinNoise(time + _noiseOffsetPitch, _noiseOffsetPitch) - 0.5f;
+            float noiseY = Mathf.PerlinNoise(time + _noiseOffsetY, _noiseOffsetY) - 0.5f;
             float noiseThrust = Mathf.PerlinNoise(time + _noiseOffsetThrust, _noiseOffsetThrust);
 
             // apply attraction force from lure
@@ -92,6 +93,7 @@ public class FishSwimScript : MonoBehaviour
             if (lureVector.magnitude > _lureDetectionRadius) {
                 // perlin wandering
                 _rb.AddTorque(new Vector3(0.0f, _rotationSpeed * noiseYaw * deltaTime, 0.0f));
+                _rb.AddForce(new Vector3(0.0f, _bobSpeed * noiseY, 0.0f));
             } else {
                 if (Random.Range(0, _lureDetectionRadius) > lureVector.magnitude) {
                     // TODO: turn away from lure
@@ -99,6 +101,7 @@ public class FishSwimScript : MonoBehaviour
                 } else {
                     // perlin wandering
                     _rb.AddTorque(new Vector3(0.0f, _rotationSpeed * noiseYaw * deltaTime, 0.0f));
+                    _rb.AddForce(new Vector3(0.0f, _bobSpeed * noiseY, 0.0f));
                 }
             }
 
@@ -137,7 +140,7 @@ public class FishSwimScript : MonoBehaviour
         if (transform.position.y > WATER_LEVEL - _minDistanceBelowWater)
         {
             float deltaTime = Time.fixedDeltaTime;
-            _rb.AddForce(Vector3.up * -VERTICAL_ADJUST_FORCE * deltaTime);
+            _rb.AddForce(Vector3.up * -VERTICAL_ADJUST_FORCE * (1 + transform.position.y - WATER_LEVEL + _minDistanceBelowWater) * deltaTime);
         } 
     }
 }
