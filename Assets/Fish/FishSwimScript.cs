@@ -1,5 +1,10 @@
+using System;
+using System.Numerics;
 using UnityEngine;
+using Random = UnityEngine.Random;
+using Vector3 = UnityEngine.Vector3;
 
+[RequireComponent(typeof(Rigidbody))]
 public class FishSwimScript : MonoBehaviour
 {
     [SerializeField] float _swimSpeed = 300.0f;
@@ -47,7 +52,7 @@ public class FishSwimScript : MonoBehaviour
 
     private void MoveFish()
     {
-        float _deltaTime = Time.fixedDeltaTime;
+        float deltaTime = Time.fixedDeltaTime;
 
         // fish propels itself in model forward direction only
         _forwardDirection = _tf.forward;
@@ -78,10 +83,11 @@ public class FishSwimScript : MonoBehaviour
         }
 
         // apply thrust in forward direction
-        _rb.AddForce(_forwardDirection * _swimSpeed * _deltaTime * (1 + urgencyFactor + noiseThrust));
+        _rb.AddForce(_forwardDirection * _swimSpeed * deltaTime * (1 + urgencyFactor + noiseThrust));
 
         // apply linear drag
-        _rb.AddForce(-1.0f * _linearDragCoefficient * _rb.linearVelocity.sqrMagnitude * _deltaTime * _rb.linearVelocity);
+        Debug.Log($"-1.0f * {_linearDragCoefficient} * {_rb.linearVelocity.sqrMagnitude} * {deltaTime} * {_rb.linearVelocity}");
+        _rb.AddForce(-1.0f * _linearDragCoefficient * _rb.linearVelocity.sqrMagnitude * deltaTime * _rb.linearVelocity);
 
         // apply angular drag
         _rb.AddTorque(-1.0f * _angularDragCoefficient * _rb.angularVelocity);
@@ -89,21 +95,25 @@ public class FishSwimScript : MonoBehaviour
 
     private void StayAboveGround()
     {
-        if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out var hit, TERRAIN_CHECK_DISTANCE))
+        if (Physics.Raycast(transform.position + Vector3.up * MIN_DISTANCE_ABOVE_TERRAIN, Vector3.down, out var hit, TERRAIN_CHECK_DISTANCE))
             if (hit.collider.CompareTag("Terrain"))
             {
                 float targetY = hit.point.y + MIN_DISTANCE_ABOVE_TERRAIN;
                 if (transform.position.y < targetY)
                 {
-                    float newY = Mathf.Lerp(transform.position.y, targetY, Time.deltaTime * VERTICAL_ADJUST_SPEED);
-                    transform.position = new Vector3(transform.position.x, newY, transform.position.z);
+                    // float newY = Mathf.Lerp(transform.position.y, targetY, Time.deltaTime * VERTICAL_ADJUST_SPEED);
+                    // transform.position = new Vector3(transform.position.x, newY, transform.position.z);
+                    _rb.AddForce(Vector3.up * .1f);
                 }
             }
     }
 
     private void StayUnderWater()
     {
-        if (transform.position.y > WATER_LEVEL) 
-            transform.position = Vector3.up * -FALL_SPEED;
+        if (transform.position.y > WATER_LEVEL)
+        {
+            float deltaTime = Time.fixedDeltaTime;
+            _rb.AddForce(Vector3.up * -FALL_SPEED * deltaTime);
+        } 
     }
 }
