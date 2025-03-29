@@ -5,7 +5,7 @@ public class TempFishMovement : MonoBehaviour
     [SerializeField] public float speed = 2f;
     [SerializeField] public float noiseScale = 1f;
     [SerializeField] public float noiseSpeed = 1f;
-    [SerializeField] public float rotationSpeed = 5f;
+    [SerializeField] public float rotationSpeed = 2f;
     
     private float _noiseOffsetX;
     private float _noiseOffsetY;
@@ -46,7 +46,18 @@ public class TempFishMovement : MonoBehaviour
 
     private void FaceForward(Vector3 movement)
     {
+        
         Quaternion targetRotation = Quaternion.LookRotation(movement);
+        Vector3 targetEuler = targetRotation.eulerAngles;
+
+        float pitch = targetEuler.x > 180f ? targetEuler.x - 360f : targetEuler.x;
+        float minPitch = -10f;
+        float maxPitch = 10f;
+
+        pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
+        targetEuler.x = pitch;
+        targetRotation = Quaternion.Euler(targetEuler);
+
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
     }
 

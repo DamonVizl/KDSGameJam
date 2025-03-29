@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b520cbd29bc8bd40baf802b2e269b92, type: 3}
+  m_Name: Fish_Goldy
+  m_EditorClassIdentifier: 
+  fishPrefab: {fileID: 8222310034206454829, guid: 05ba562c4a29d8242bc276439b5cdc05, type: 3}
+  upperSpawnHeight: -3
+  lowerSpawnHeight: -5
+  minFishScale: 0.5
+  maxFishScale: 0.9
+  fishSpawnAttempts: 30
+  schoolOfFish: 0
