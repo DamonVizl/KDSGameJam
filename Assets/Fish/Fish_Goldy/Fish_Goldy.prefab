@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6172655733892723763}
   - component: {fileID: 8989235617493743865}
   - component: {fileID: 3995942909073495266}
+  - component: {fileID: 1754820657920949722}
   m_Layer: 0
   m_Name: Fish_Goldy
   m_TagString: Untagged
@@ -48,7 +49,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _swimSpeed: 200
   _rotationSpeed: 500
+  _bobSpeed: 3
   _noiseSpeed: 1
+  mass: 1
   _linearDragCoefficient: 10
   _angularDragCoefficient: 100
   _lureDetectionRadius: 5
@@ -81,6 +84,27 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 64
   m_CollisionDetection: 0
+--- !u!135 &1754820657920949722
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8222310034206454829}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.26
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &1620624161613853166
 PrefabInstance:
   m_ObjectHideFlags: 0
