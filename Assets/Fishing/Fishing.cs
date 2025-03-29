@@ -161,7 +161,7 @@ public class Fishing : MonoBehaviour
     private void RecallLine()
     {
         //Clear the list of IAmMagnetic objects on the lure.
-        _lure.ClearMagneticObjects();
+        _lure.Reset();
 
         //recall the float
         _floatRigidbody.transform.parent = _floatParentHomePosition; 

@@ -6,7 +6,8 @@ using UnityEngine.UIElements;
 [RequireComponent(typeof(SphereCollider))]
 public class Lure : MonoBehaviour
 {
-    [SerializeField] private LureData _lureData; //refernece to SO for initial values
+    [SerializeField] public LureData _lureData; //refernece to SO for initial values
+    private LureAttach _lureAttach; 
     [SerializeField] private float _magneticMass = 1.0f; // The mass of the lure itself
     [SerializeField] private float _radius = 20f; // The radius of the lure's magnetic field
     public float MagneticMass => _magneticMass; // The mass of the lure itself
@@ -17,6 +18,7 @@ public class Lure : MonoBehaviour
     {
         _collider = GetComponent<SphereCollider>();
         _radius = _lureData.LureMagneticRadius; 
+        _lureAttach = GetComponentInChildren<LureAttach>();
     }
     void Update()
     {   
@@ -33,11 +35,13 @@ public class Lure : MonoBehaviour
     /// Clear the list of magnetic objects, important to have this for when the player
     /// recalls the line, as OnTriggerExit won't be called for any objects on the disabled lure. 
     /// </summary>
-    public void ClearMagneticObjects()
+    public void Reset()
     {
         _magneticObjects.Clear();
         _magneticMass = 1; //reset the mass of the lure to 1
-        UpdateRadius(_lureData.LureMagneticRadius); //reset the radius of the lure to 20f
+        _radius = _lureData.LureMagneticRadius; //reset the radius of the lure the SO value
+        //reset out the child lure attach too
+        _lureAttach.Reset(); 
     }
 
     void OnTriggerEnter(Collider other)

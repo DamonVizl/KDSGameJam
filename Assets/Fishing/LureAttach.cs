@@ -12,6 +12,7 @@ public class LureAttach : MonoBehaviour
     {
         _parentLure = GetComponentInParent<Lure>();
         _collider = GetComponent<SphereCollider>();
+        _radius = _parentLure._lureData.LureAttachedRadius; 
         _collider.radius = _radius;
         _collider.isTrigger = true;
     }
@@ -44,5 +45,12 @@ public class LureAttach : MonoBehaviour
         _radius += mass * 1f; 
         _collider.radius = _radius;
         Debug.Log("New radius: " + _collider.radius);   
+    }
+
+    public void Reset()
+    {
+        _radius = _parentLure._lureData.LureAttachedRadius; 
+        _collider.radius = _radius;
+        _collider.isTrigger = true;
     }
 }
