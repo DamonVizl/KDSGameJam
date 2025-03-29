@@ -123,6 +123,10 @@ public class FishSpawner : MonoBehaviour
         instance.transform.parent = transform;
         var fishScale = Random.Range(fishData.minFishScale, fishData.maxFishScale);
         instance.transform.localScale = Vector3.one * fishScale;
+        var fishSwimScript = instance.GetComponent<FishSwimScript>();
+        if (fishSwimScript != null) {
+            fishSwimScript.mass = fishData.mass * fishScale;
+        }
     }
 
     private void OnDrawGizmosSelected()

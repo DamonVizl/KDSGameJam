@@ -20,5 +20,8 @@ public class FishSpawnData : ScriptableObject
     
     [Header("Fish Schooling")]
     public bool schoolOfFish = false;
+
+    [Header("Fish Mass")]
+    public float mass = 1.0f;
     
 }

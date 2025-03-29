@@ -1,15 +1,15 @@
-using System;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using Vector3 = UnityEngine.Vector3;
 
 [RequireComponent(typeof(Rigidbody))]
-public class FishSwimScript : MonoBehaviour
+public class FishSwimScript : MonoBehaviour, IAmMagnetic
 {
     [SerializeField] float _swimSpeed = 300.0f;
     [SerializeField] float _rotationSpeed = 1000.0f;
     [SerializeField] float _bobSpeed = 3.0f;
     [SerializeField] float _noiseSpeed = 1f;
+    [SerializeField] public float mass = 1.0f;
 
     [SerializeField] float _linearDragCoefficient = 10.0f;
     [SerializeField] float _angularDragCoefficient = 100.0f;
@@ -83,10 +83,6 @@ public class FishSwimScript : MonoBehaviour
             float noiseY = Mathf.PerlinNoise(time + _noiseOffsetY, _noiseOffsetY) - 0.5f;
             float noiseThrust = Mathf.PerlinNoise(time + _noiseOffsetThrust, _noiseOffsetThrust);
 
-            // apply attraction force from lure
-            Vector3 attractionVector = lureVector.normalized * lureMass * _rb.mass / lureVector.sqrMagnitude;
-            _rb.AddForce(attractionVector * deltaTime);
-
             float urgencyFactor = lureVector.magnitude > _lureDetectionRadius ? 0.0f : 1.0f - (lureVector.magnitude / _lureDetectionRadius);
 
             // rotate
@@ -97,6 +93,8 @@ public class FishSwimScript : MonoBehaviour
             } else {
                 if (Random.Range(0, _lureDetectionRadius) > lureVector.magnitude) {
                     // TODO: turn away from lure
+                    // Vector3 lureXZVector = new Vector3(lureVector.x, 0.0f, lureVector.z).normalized;
+                    // Vector3 directionXZVector = new Vector3(_forwardDirection.x, 0.0f, _forwardDirection.z).normalized;
                     _rb.AddTorque(new Vector3(0.0f, 3 * _rotationSpeed * deltaTime, 0.0f));
                 } else {
                     // perlin wandering
@@ -142,5 +140,22 @@ public class FishSwimScript : MonoBehaviour
             float deltaTime = Time.fixedDeltaTime;
             _rb.AddForce(Vector3.up * -VERTICAL_ADJUST_FORCE * (1 + transform.position.y - WATER_LEVEL + _minDistanceBelowWater) * deltaTime);
         } 
+    }
+
+    public void ApplyForce(Vector3 direction, float distance, float pullerMass)
+    {
+        // apply attraction force from lure
+        Vector3 attractionVector = direction.normalized * lureMass * _rb.mass / direction.sqrMagnitude;
+        _rb.AddForce(attractionVector * Time.fixedDeltaTime);
+    }
+
+    public float GetMass()
+    {
+        return mass;
+    }
+
+    public Vector3 GetPosition()
+    {
+        return _tf.position;
     }
 }
