@@ -35,26 +35,25 @@ public class InputManager : MonoBehaviour
     {
         _castIA = _input.actions["Cast"];
         _castIA.performed += c => OnCastPressed?.Invoke();
-        _castIA.cancelled += c => OnCastReleased?.Invoke();
+        _castIA.canceled += c => OnCastReleased?.Invoke();
 
         _recallIA = _input.actions["Recall"];
         _recallIA.performed += c => OnRecallPressed?.Invoke();
 
         _reelIA = _input.actions["Reel"];
         _reelIA.performed += c => OnReelPressed?.Invoke();
-        _reelIA.cancelled += c => OnReelReleased?.Invoke();
-
+        _reelIA.canceled += c => OnReelReleased?.Invoke();
     }
 
     private void CleanUpInputActions()
     {
         _castIA.performed -= c => OnCastPressed?.Invoke();
-        _castIA.cancelled -= c => OnCastReleased?.Invoke();
+        _castIA.canceled -= c => OnCastReleased?.Invoke();
 
         _recallIA.performed -= c => OnRecallPressed?.Invoke();
 
         _reelIA.performed -= c => OnReelPressed?.Invoke();
-        _reelIA.cancelled -= c => OnReelReleased?.Invoke();
+        _reelIA.canceled -= c => OnReelReleased?.Invoke();
     }
 
 
