@@ -14,25 +14,27 @@ public class Fishing : MonoBehaviour
     [SerializeField] PlayerStateMachine _playerStateMachine; //reference to the player state machine, used to transition between states.
     [SerializeField] Transform _fishingRod, _floatCastPoint; //where to cast the float from, with the rotation
 
+    [SerializeField] FishingData _fishingData; //reference to the fishing data, used to get the cast distance and other data.
+
     //rigidbody for the float, it will be thrown out from the rod, based on the cast distance
     [SerializeField] Rigidbody _floatRigidbody; 
     //the transform to parent the float to, so it's always launched from the same position (tip of the rod)
     [SerializeField] Transform _floatParentHomePosition; 
+    //reference to the lure
+    [SerializeField] Lure _lure; 
 
-    //cast multiplier
-    [SerializeField] float _castMultiplier = 10f; //multiplier for the cast distance, used to adjust the distance the float is thrown out.
     //initial rotation of the fishing rod
     Quaternion _initialRodRot;
 
-    float _minCastDistance = 10f;
-    float _maxCastDistance = 100f;
+    //bool for if the player is 'reeling' in
+    bool _isReeling = false;
     float _castDistance; // The distance the player can cast the fishing line
     public float CastDistance 
     {
         get { return _castDistance; }
         set { 
             _castDistance = value; 
-            OnCastDistanceChanged?.Invoke(_castDistance, _minCastDistance, _maxCastDistance); 
+            OnCastDistanceChanged?.Invoke(_castDistance, _fishingData.MinCastDistance, _fishingData.MaxCastDistance); 
             }
     }
 
@@ -46,12 +48,17 @@ public class Fishing : MonoBehaviour
       SubToInputs();
      _initialRodRot = _fishingRod.localRotation; // get the initial rotation of the fishing rod
     }
+    void Update()
+    {
+        if(_isReeling) Reel();
+    }
     void SubToInputs()
     {
         _inputManager.OnCastPressed += StartCast;
         _inputManager.OnRecallPressed += RecallLine; 
         _inputManager.OnCastReleased += EndCast;
-        _inputManager.OnReelPressed += ReelLine; 
+        _inputManager.OnReelPressed += PressReelButton; 
+        _inputManager.OnReelReleased += ReleaseReelButton;
 
     }
     void OnDisable()
@@ -59,7 +66,8 @@ public class Fishing : MonoBehaviour
         _inputManager.OnCastPressed -= StartCast;
         _inputManager.OnRecallPressed -= RecallLine;
         _inputManager.OnCastReleased -= EndCast;
-        _inputManager.OnReelPressed -= ReelLine; 
+        _inputManager.OnReelPressed -= PressReelButton; 
+        _inputManager.OnReelReleased -= ReleaseReelButton;
     }
 
     #region Casting
@@ -92,7 +100,7 @@ public class Fishing : MonoBehaviour
             _fishingRod.localRotation = Quaternion.Lerp(initialRot, targetRot, timer / duration);
 
             //increment the cast distacne over time, between the mix and max distance
-            CastDistance = Mathf.Clamp(CastDistance + Time.deltaTime * _castMultiplier, _minCastDistance, _maxCastDistance);
+            CastDistance = Mathf.Clamp(CastDistance + Time.deltaTime * _fishingData.CastMultiplier, _fishingData.MinCastDistance, _fishingData.MaxCastDistance);
             //return to the main thread
             await Awaitable.NextFrameAsync(); 
         }
@@ -132,9 +140,8 @@ public class Fishing : MonoBehaviour
         _floatRigidbody.angularVelocity = Vector3.zero; 
         _floatRigidbody.gameObject.SetActive(true); //activate the float rigidbody
         _floatRigidbody.transform.parent = null;
-        Vector3 castDir = _floatCastPoint.localRotation * Vector3.forward; //get the forward direction of the float cast point 
-       
-        _floatRigidbody.AddForce((castDir + Vector3.up*castDistance*0.01f) * castDistance, ForceMode.Impulse); //add force to the float rigidbody in the direction of the players forward direction and up a little bit to simulate the float going out.
+        Debug.DrawRay(_floatCastPoint.position, _floatCastPoint.transform.forward * castDistance, Color.red, 2f); //draw a ray in the direction of the cast point for debugging
+        _floatRigidbody.AddForce((_floatCastPoint.transform.forward + Vector3.up*castDistance*0.01f) * castDistance, ForceMode.Impulse); //add force to the float rigidbody in the direction of the players forward direction and up a little bit to simulate the float going out.
 
     }
     #endregion
@@ -142,7 +149,8 @@ public class Fishing : MonoBehaviour
     //recalling the line before catching a fish. Will bring the line back in and take us back to the moving state
     private void RecallLine()
     {
-        //TODO: animate the line coming back in
+        //Clear the list of IAmMagnetic objects on the lure.
+        _lure.ClearMagneticObjects();
 
         //recall the float
         _floatRigidbody.transform.parent = _floatParentHomePosition; 
@@ -150,20 +158,34 @@ public class Fishing : MonoBehaviour
         _floatRigidbody.gameObject.SetActive(false); 
         //return to the moving state
         _playerStateMachine.TransitionToState(PlayerState.Moving);
-
     }
 
     #endregion
     #region Reeling
     //reeling in the line when a fish is on the hook. We will either break the line or catch the fish to move back to the moving state
+    void Reel(){
+        //get the vector of the float to the player
+        Vector3 direction = this.transform.position - _floatRigidbody.transform.position; 
+        direction.Normalize(); 
+        //add force to the float in the direction of the player
+        _floatRigidbody.AddForce(direction * _fishingData.ReelStrengthMultiplier * Time.fixedDeltaTime, ForceMode.Impulse); 
 
-    private void ReelLine()
+        //check if the float is close enough to the player to catch the fish
+        if(Vector3.Distance(this.transform.position, _floatRigidbody.transform.position) < 3f)
+        {
+            //catch the fish and return to the moving state
+            Debug.Log("Line has been fully reeled in");
+            RecallLine();
+        }
+    }
+
+    private void PressReelButton()
     {
-        //TODO: Animate the line reeling in
-
-        //TODO: Increase the 'tension' meter on the line
-
-        //bring the line in an incremental amount
+        _isReeling = true; 
+    }
+    private void ReleaseReelButton()
+    {
+        _isReeling = false;
     }
     #endregion
 }

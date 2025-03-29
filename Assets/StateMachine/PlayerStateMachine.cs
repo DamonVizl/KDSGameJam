@@ -8,7 +8,7 @@ public enum PlayerState
     Moving,
     //Idle,
     Fishing,
-    OnTheHook,
+    //OnTheHook,
 }
 public class PlayerStateMachine : BaseStateMachine<PlayerState>
 {
@@ -21,7 +21,7 @@ public class PlayerStateMachine : BaseStateMachine<PlayerState>
         //add the states to the statemachine
         States.Add(PlayerState.Moving, new MovingState(this));
         States.Add(PlayerState.Fishing, new FishingState(this));
-        States.Add(PlayerState.OnTheHook, new OnTheHookState(this));
+        //States.Add(PlayerState.OnTheHook, new OnTheHookState(this));
         //set the default state to start on
         CurrentState = States[PlayerState.Moving];
     }

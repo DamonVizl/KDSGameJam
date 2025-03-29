@@ -6,9 +6,8 @@ using UnityEngine.UIElements;
 [RequireComponent(typeof(SphereCollider))]
 public class Lure : MonoBehaviour
 {
-
-    [SerializeField]
-    private float _magneticMass = 1; // The mass of the lure itself
+    [SerializeField] private LureData _lureData; //refernece to SO for initial values
+    [SerializeField] private float _magneticMass = 1.0f; // The mass of the lure itself
     [SerializeField] private float _radius = 20f; // The radius of the lure's magnetic field
     public float MagneticMass => _magneticMass; // The mass of the lure itself
     SphereCollider _collider;
@@ -17,7 +16,28 @@ public class Lure : MonoBehaviour
     void Start()
     {
         _collider = GetComponent<SphereCollider>();
-        _collider.radius = _radius;
+        _radius = _lureData.LureMagneticRadius; 
+    }
+    void Update()
+    {   
+        //iterate through the list and apply force to each of the magnetic objects that are close enough. 
+        foreach(var magneticObject in _magneticObjects)
+        {
+            //magneticObject.GetRigidbody().AddForce(Vector3.up * _magneticMass * 10f, ForceMode.Force);
+            Vector3 direction = (transform.position - magneticObject.GetPosition()).normalized;
+            float distance = Vector3.Distance(transform.position, magneticObject.GetPosition());
+            magneticObject.ApplyForce(direction, distance, _magneticMass);
+        }
+    }
+    /// <summary>
+    /// Clear the list of magnetic objects, important to have this for when the player
+    /// recalls the line, as OnTriggerExit won't be called for any objects on the disabled lure. 
+    /// </summary>
+    public void ClearMagneticObjects()
+    {
+        _magneticObjects.Clear();
+        _magneticMass = 1; //reset the mass of the lure to 1
+        UpdateRadius(_lureData.LureMagneticRadius); //reset the radius of the lure to 20f
     }
 
     void OnTriggerEnter(Collider other)
@@ -85,18 +105,4 @@ public class Lure : MonoBehaviour
         _collider.radius = _radius;
         Debug.Log("New radius: " + _collider.radius);   
     }
-                        
-
-    void Update()
-    {
-        foreach(var magneticObject in _magneticObjects)
-        {
-            //magneticObject.GetRigidbody().AddForce(Vector3.up * _magneticMass * 10f, ForceMode.Force);
-            Vector3 direction = (transform.position - magneticObject.GetPosition()).normalized;
-            float distance = Vector3.Distance(transform.position, magneticObject.GetPosition());
-            magneticObject.ApplyForce(direction, distance, _magneticMass);
-        }
-    }
-
-
 }

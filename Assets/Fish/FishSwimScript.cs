@@ -144,6 +144,7 @@ public class FishSwimScript : MonoBehaviour, IAmMagnetic
 
     public void ApplyForce(Vector3 direction, float distance, float pullerMass)
     {
+        Debug.Log("Applying force to fish: " + gameObject.name);    
         // apply attraction force from lure
         Vector3 attractionVector = direction.normalized * lureMass * _rb.mass / direction.sqrMagnitude;
         _rb.AddForce(attractionVector * Time.fixedDeltaTime);
