@@ -42,7 +42,7 @@ public class FishSpawner : MonoBehaviour
                 Ray ray = new Ray(rayOrigin, Vector3.down);
                 RaycastHit hit;
 
-                if (Physics.Raycast(ray, out hit, raycastHeight * 2f))
+                if (Physics.Raycast(ray, out hit, raycastHeight * 2f, LayerMask.GetMask("Terrain")))
                 {
                     // Check if the hit point's Y position is within the allowed spawn height range.
                     var fishIsWithinAllowedHeight = 
@@ -50,12 +50,6 @@ public class FishSpawner : MonoBehaviour
                         hit.point.y > selectedData.lowerSpawnHeight;
                     if (!fishIsWithinAllowedHeight)
                     {
-                        // if (selectedData.fishPrefab.name.Contains("Swordfish"))
-                        // {
-                        //     if(hit.point.y > selectedData.upperSpawnHeight)
-                        //         Debug.Log("Making Sword Fishy at ..." + hit.point.y);
-                        // }
-
                         Debug.Log(
                             $"Skipping spawn: hit point {hit.point.y} is not " +
                             $"within allowed range ( {selectedData.fishPrefab.name} {selectedData.lowerSpawnHeight}," +
@@ -71,15 +65,6 @@ public class FishSpawner : MonoBehaviour
                                   $"with prefab: {selectedData.fishPrefab.name}");
                         PlacePrefabAt(hit.point, selectedData);
                     }
-                    
-                    // If no terrain is specified, place a prefab on any hit.
-                    else if (terrain == null)
-                    {
-                        Debug.Log($"Ray {i} hit {hit.collider.name} " +
-                                  $"at: {hit.point} with prefab: {selectedData.fishPrefab.name}");
-                        PlacePrefabAt(hit.point, selectedData);
-                    } else
-                        Debug.Log($"Ray {i} hit non-terrain object: {hit.collider.name} at: {hit.point}");
                 }
                 else
                 {
