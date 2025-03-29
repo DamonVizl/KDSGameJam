@@ -119,7 +119,7 @@ public class FishSpawner : MonoBehaviour
             return;
         }
 
-        instance.transform.position = position + Vector3.up * 4;
+        instance.transform.position = position + Vector3.up * 2;
         instance.transform.parent = transform;
         var fishScale = Random.Range(fishData.minFishScale, fishData.maxFishScale);
         instance.transform.localScale = Vector3.one * fishScale;

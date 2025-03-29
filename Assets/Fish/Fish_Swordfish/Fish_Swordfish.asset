@@ -17,5 +17,5 @@ MonoBehaviour:
   lowerSpawnHeight: -11
   minFishScale: 1
   maxFishScale: 2
-  fishSpawnAttempts: 40
+  fishSpawnAttempts: 10
   schoolOfFish: 0
