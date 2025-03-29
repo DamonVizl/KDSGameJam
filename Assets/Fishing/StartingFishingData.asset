@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 398ea9c5ee448834bbcb3874f4e69f47, type: 3}
   m_Name: StartingFishingData
   m_EditorClassIdentifier: 
-  _lureMagneticRadius: 10
-  _lureAttachedRadius: 3
-  _lureMagneticMass: 1
+  CastMultiplier: 10
+  MinCastDistance: 10
+  MaxCastDistance: 100
+  ReelStrengthMultiplier: 0.5
