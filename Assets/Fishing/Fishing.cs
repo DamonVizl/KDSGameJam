@@ -8,6 +8,7 @@ using Codice.Client.Common.GameUI;
 /// <summary>
 /// Handles the fishing behaviour
 /// </summary>
+[RequireComponent(typeof(FishingLineRenderer))]
 public class Fishing : MonoBehaviour
 {
     [SerializeField] InputManager _inputManager; 
@@ -16,6 +17,8 @@ public class Fishing : MonoBehaviour
 
     [SerializeField] FishingData _fishingData; //reference to the fishing data, used to get the cast distance and other data.
 
+    [SerializeField] FishingLineRenderer _fishingLineRenderer;
+    
     //rigidbody for the float, it will be thrown out from the rod, based on the cast distance
     [SerializeField] Rigidbody _floatRigidbody; 
     //the transform to parent the float to, so it's always launched from the same position (tip of the rod)
@@ -45,10 +48,11 @@ public class Fishing : MonoBehaviour
     #endregion
     void Start()
     {
-      SubToInputs();
-     _initialRodRot = _fishingRod.localRotation; // get the initial rotation of the fishing rod
+        SubToInputs();
+        _initialRodRot = _fishingRod.localRotation; // get the initial rotation of the fishing rod
+        _fishingLineRenderer = GetComponent<FishingLineRenderer>();     
     }
-    void Update()
+    void FixedUpdate()
     {
         if(_isReeling) Reel();
     }
@@ -143,6 +147,7 @@ public class Fishing : MonoBehaviour
         Debug.DrawRay(_floatCastPoint.position, _floatCastPoint.transform.forward * castDistance, Color.red, 2f); //draw a ray in the direction of the cast point for debugging
         _floatRigidbody.AddForce((_floatCastPoint.transform.forward + Vector3.up*castDistance*0.01f) * castDistance, ForceMode.Impulse); //add force to the float rigidbody in the direction of the players forward direction and up a little bit to simulate the float going out.
 
+        _fishingLineRenderer.AttachFishingLineToTransform(_floatRigidbody.transform);
     }
     #endregion
     #region Recall
@@ -168,7 +173,7 @@ public class Fishing : MonoBehaviour
         Vector3 direction = this.transform.position - _floatRigidbody.transform.position; 
         direction.Normalize(); 
         //add force to the float in the direction of the player
-        _floatRigidbody.AddForce(direction * _fishingData.ReelStrengthMultiplier * Time.fixedDeltaTime, ForceMode.Impulse); 
+        _floatRigidbody.AddForce(direction * _fishingData.ReelStrengthMultiplier, ForceMode.Impulse); 
 
         //check if the float is close enough to the player to catch the fish
         if(Vector3.Distance(this.transform.position, _floatRigidbody.transform.position) < 3f)
