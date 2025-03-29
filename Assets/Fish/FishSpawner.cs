@@ -45,8 +45,17 @@ public class FishSpawner : MonoBehaviour
                 if (Physics.Raycast(ray, out hit, raycastHeight * 2f))
                 {
                     // Check if the hit point's Y position is within the allowed spawn height range.
-                    if (hit.point.y < selectedData.lowerSpawnHeight || hit.point.y > selectedData.upperSpawnHeight)
+                    var fishIsWithinAllowedHeight = 
+                        hit.point.y < selectedData.upperSpawnHeight &&
+                        hit.point.y > selectedData.lowerSpawnHeight;
+                    if (!fishIsWithinAllowedHeight)
                     {
+                        // if (selectedData.fishPrefab.name.Contains("Swordfish"))
+                        // {
+                        //     if(hit.point.y > selectedData.upperSpawnHeight)
+                        //         Debug.Log("Making Sword Fishy at ..." + hit.point.y);
+                        // }
+
                         Debug.Log(
                             $"Skipping spawn: hit point {hit.point.y} is not " +
                             $"within allowed range ( {selectedData.fishPrefab.name} {selectedData.lowerSpawnHeight}," +
@@ -110,7 +119,7 @@ public class FishSpawner : MonoBehaviour
             return;
         }
 
-        instance.transform.position = position + Vector3.up * 3;
+        instance.transform.position = position + Vector3.up * 2;
         instance.transform.parent = transform;
         var fishScale = Random.Range(fishData.minFishScale, fishData.maxFishScale);
         instance.transform.localScale = Vector3.one * fishScale;
