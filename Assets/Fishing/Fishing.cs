@@ -14,6 +14,8 @@ public class Fishing : MonoBehaviour
     [SerializeField] InputManager _inputManager; 
     [SerializeField] PlayerStateMachine _playerStateMachine; //reference to the player state machine, used to transition between states.
     [SerializeField] Transform _fishingRod, _floatCastPoint; //where to cast the float from, with the rotation
+    
+    CameraSwitcher _cameraSwitcher;
 
     [SerializeField] FishingData _fishingData; //reference to the fishing data, used to get the cast distance and other data.
 
@@ -50,7 +52,10 @@ public class Fishing : MonoBehaviour
     {
         SubToInputs();
         _initialRodRot = _fishingRod.localRotation; // get the initial rotation of the fishing rod
-        _fishingLineRenderer = GetComponent<FishingLineRenderer>();     
+        _fishingLineRenderer = GetComponent<FishingLineRenderer>();    
+        
+        _cameraSwitcher = FindFirstObjectByType<CameraSwitcher>();
+        _cameraSwitcher.SwitchToFirstPerson();
     }
     void FixedUpdate()
     {
@@ -81,6 +86,7 @@ public class Fishing : MonoBehaviour
     /// </summary>
     async void StartCast()
     {
+        _cameraSwitcher.SwitchToCasting();
 
         if(_playerStateMachine.GetCurrentState() != PlayerState.Moving) return; //shouldn't be required because of the action maps but added regardless.
         CastDistance = 10f;
@@ -133,6 +139,8 @@ public class Fishing : MonoBehaviour
         }
         //TODO: animate the fishing line going out
         _playerStateMachine.TransitionToState(PlayerState.Fishing);
+        
+        _cameraSwitcher.SwitchToFirstPerson();
     }
 
     private void CastFloat(float castDistance)
@@ -146,8 +154,6 @@ public class Fishing : MonoBehaviour
         _floatRigidbody.transform.parent = null;
         Debug.DrawRay(_floatCastPoint.position, _floatCastPoint.transform.forward * castDistance, Color.red, 2f); //draw a ray in the direction of the cast point for debugging
         _floatRigidbody.AddForce((_floatCastPoint.transform.forward + Vector3.up*castDistance*0.01f) * castDistance, ForceMode.Impulse); //add force to the float rigidbody in the direction of the players forward direction and up a little bit to simulate the float going out.
-
-        _fishingLineRenderer.AttachFishingLineToTransform(_floatRigidbody.transform);
     }
     #endregion
     #region Recall
