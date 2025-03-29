@@ -1,3 +1,4 @@
+using Mono.Cecil;
 using UnityEngine;
 
 [RequireComponent(typeof(SphereCollider))]
@@ -16,18 +17,20 @@ public class LureAttach : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (other is IAmMagnetic magneticObject)
+        var magneticObject = other.GetComponent<IAmMagnetic>();
+        if (magneticObject != null)
         {
             _parentLure.AttachMagneticToLure(magneticObject);
-            UpdateRadius(_parentLure.MagneticMass);
+            UpdateRadius(magneticObject.GetMass());
         }
     }
     void OnTriggerExit(Collider other)
     {
-        if (other is IAmMagnetic magneticObject)
+        var magneticObject = other.GetComponent<IAmMagnetic>();
+        if (magneticObject != null)
         {
+            UpdateRadius(-magneticObject.GetMass());
             _parentLure.RemoveMagneticFromLure(magneticObject);
-            UpdateRadius(_parentLure.MagneticMass);
         }
     }
 
@@ -38,7 +41,8 @@ public class LureAttach : MonoBehaviour
     /// <param name="mass"></param>
     void UpdateRadius(float mass)
     {   
-        _radius += mass; 
+        _radius += mass * 1f; 
         _collider.radius = _radius;
+        Debug.Log("New radius: " + _collider.radius);   
     }
 }
