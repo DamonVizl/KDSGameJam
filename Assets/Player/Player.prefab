@@ -51,7 +51,6 @@ MonoBehaviour:
   _playerStateMachine: {fileID: 4664504466670034171}
   _fishingRod: {fileID: 5898966994890135963}
   _floatCastPoint: {fileID: 8755127573285784624}
-  _cameraSwitcher: {fileID: 0}
   _fishingData: {fileID: 11400000, guid: 0cbe501685bf6174bafa8f527a02c162, type: 2}
   _fishingLineRenderer: {fileID: 7435141639071350461}
   _floatRigidbody: {fileID: 5314551723304254733}
@@ -393,7 +392,7 @@ Camera:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3529765263354137700}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 4
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
@@ -727,7 +726,7 @@ Camera:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4742791913532727350}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
   m_BackGroundColor: {r: 0.972549, g: 0.95686275, b: 0.92941177, a: 0}
@@ -916,7 +915,7 @@ Transform:
   m_GameObject: {fileID: 6527553791634326305}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.609, y: 0.68, z: 0.706}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1353,32 +1352,44 @@ PrefabInstance:
     m_TransformParent: {fileID: 5895308149259518030}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 2c5497c457e7c974397d724a584c6ca3, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 99.48867
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 2c5497c457e7c974397d724a584c6ca3, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 99.48867
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 2c5497c457e7c974397d724a584c6ca3, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 99.48867
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 2c5497c457e7c974397d724a584c6ca3, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.05
+      value: 0.517
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c5497c457e7c974397d724a584c6ca3, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.03
+      value: 0.004
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c5497c457e7c974397d724a584c6ca3, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.42
+      value: 0.987
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c5497c457e7c974397d724a584c6ca3, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.9944597
+      value: 0.9990466
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c5497c457e7c974397d724a584c6ca3, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.000000037539806
+      value: -0.00000003771296
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c5497c457e7c974397d724a584c6ca3, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.10511851
+      value: 0.043656107
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c5497c457e7c974397d724a584c6ca3, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.0000000039681134
+      value: -0.0000000016479738
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c5497c457e7c974397d724a584c6ca3, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -1386,7 +1397,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c5497c457e7c974397d724a584c6ca3, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 12.068
+      value: 5.004
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c5497c457e7c974397d724a584c6ca3, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
