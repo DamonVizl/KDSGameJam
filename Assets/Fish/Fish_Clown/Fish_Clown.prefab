@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6172655733892723763}
   - component: {fileID: 8989235617493743865}
+  - component: {fileID: 3995942909073495266}
   m_Layer: 0
   m_Name: Fish_Clown
   m_TagString: Untagged
@@ -45,10 +46,41 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5b3b56189b6f074fab5ffeb9f5d5f2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 2
-  noiseScale: 1
-  noiseSpeed: 1
-  rotationSpeed: 5
+  _swimSpeed: 200
+  _rotationSpeed: 500
+  _noiseSpeed: 1
+  _linearDragCoefficient: 10
+  _angularDragCoefficient: 100
+  _lureDetectionRadius: 5
+  _minDistanceAboveTerrain: 1
+  _minDistanceBelowWater: 1
+--- !u!54 &3995942909073495266
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8222310034206454829}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1001 &6108272775373741926
 PrefabInstance:
   m_ObjectHideFlags: 0

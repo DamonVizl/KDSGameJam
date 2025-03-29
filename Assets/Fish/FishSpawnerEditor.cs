@@ -19,7 +19,7 @@ public class FishSpawnerEditor : Editor
 
         if (GUILayout.Button("Clear Fish"))
         {
-            var childFish = spawner.GetComponentsInChildren<TempFishMovement>();
+            var childFish = spawner.GetComponentsInChildren<FishSwimScript>();
             foreach (var fish in childFish)
             {
                 Undo.DestroyObjectImmediate(fish.gameObject);
