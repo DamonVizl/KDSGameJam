@@ -46,12 +46,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5b3b56189b6f074fab5ffeb9f5d5f2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _swimSpeed: 300
-  _rotationSpeed: 20
+  _swimSpeed: 100
+  _rotationSpeed: 300
   _noiseSpeed: 1
   _linearDragCoefficient: 10
-  _angularDragCoefficient: 2
+  _angularDragCoefficient: 100
   _lureDetectionRadius: 5
+  _minDistanceAboveTerrain: 2
+  _minDistanceBelowWater: 2
 --- !u!54 &3995942909073495266
 Rigidbody:
   m_ObjectHideFlags: 0
