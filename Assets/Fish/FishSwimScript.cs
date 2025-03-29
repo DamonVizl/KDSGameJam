@@ -1,14 +1,15 @@
-using System;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using Vector3 = UnityEngine.Vector3;
 
 [RequireComponent(typeof(Rigidbody))]
-public class FishSwimScript : MonoBehaviour
+public class FishSwimScript : MonoBehaviour, IAmMagnetic
 {
     [SerializeField] float _swimSpeed = 300.0f;
     [SerializeField] float _rotationSpeed = 1000.0f;
+    [SerializeField] float _bobSpeed = 3.0f;
     [SerializeField] float _noiseSpeed = 1f;
+    [SerializeField] public float mass = 1.0f;
 
     [SerializeField] float _linearDragCoefficient = 10.0f;
     [SerializeField] float _angularDragCoefficient = 100.0f;
@@ -29,7 +30,7 @@ public class FishSwimScript : MonoBehaviour
     Rigidbody _rb;   
 
     private float _noiseOffsetYaw;
-    private float _noiseOffsetPitch;
+    private float _noiseOffsetY;
     private float _noiseOffsetThrust;
 
     const float WATER_LEVEL = 0f;
@@ -43,7 +44,7 @@ public class FishSwimScript : MonoBehaviour
         _rb = GetComponent<Rigidbody>();
 
         _noiseOffsetYaw = Random.Range(0f, 1000f);
-        _noiseOffsetPitch = Random.Range(0f, 1000f);
+        _noiseOffsetY = Random.Range(0f, 1000f);
         _noiseOffsetThrust = Random.Range(0f, 1000f);
 
         _rb.maxLinearVelocity = 20.0f;
@@ -79,12 +80,8 @@ public class FishSwimScript : MonoBehaviour
 
             float time = Time.time * _noiseSpeed;
             float noiseYaw = Mathf.PerlinNoise(time + _noiseOffsetYaw, _noiseOffsetYaw) - 0.5f;
-            float noisePitch = Mathf.PerlinNoise(time + _noiseOffsetPitch, _noiseOffsetPitch) - 0.5f;
+            float noiseY = Mathf.PerlinNoise(time + _noiseOffsetY, _noiseOffsetY) - 0.5f;
             float noiseThrust = Mathf.PerlinNoise(time + _noiseOffsetThrust, _noiseOffsetThrust);
-
-            // apply attraction force from lure
-            Vector3 attractionVector = lureVector.normalized * lureMass * _rb.mass / lureVector.sqrMagnitude;
-            _rb.AddForce(attractionVector * deltaTime);
 
             float urgencyFactor = lureVector.magnitude > _lureDetectionRadius ? 0.0f : 1.0f - (lureVector.magnitude / _lureDetectionRadius);
 
@@ -92,13 +89,17 @@ public class FishSwimScript : MonoBehaviour
             if (lureVector.magnitude > _lureDetectionRadius) {
                 // perlin wandering
                 _rb.AddTorque(new Vector3(0.0f, _rotationSpeed * noiseYaw * deltaTime, 0.0f));
+                _rb.AddForce(new Vector3(0.0f, _bobSpeed * noiseY, 0.0f));
             } else {
                 if (Random.Range(0, _lureDetectionRadius) > lureVector.magnitude) {
                     // TODO: turn away from lure
+                    // Vector3 lureXZVector = new Vector3(lureVector.x, 0.0f, lureVector.z).normalized;
+                    // Vector3 directionXZVector = new Vector3(_forwardDirection.x, 0.0f, _forwardDirection.z).normalized;
                     _rb.AddTorque(new Vector3(0.0f, 3 * _rotationSpeed * deltaTime, 0.0f));
                 } else {
                     // perlin wandering
                     _rb.AddTorque(new Vector3(0.0f, _rotationSpeed * noiseYaw * deltaTime, 0.0f));
+                    _rb.AddForce(new Vector3(0.0f, _bobSpeed * noiseY, 0.0f));
                 }
             }
 
@@ -137,7 +138,24 @@ public class FishSwimScript : MonoBehaviour
         if (transform.position.y > WATER_LEVEL - _minDistanceBelowWater)
         {
             float deltaTime = Time.fixedDeltaTime;
-            _rb.AddForce(Vector3.up * -VERTICAL_ADJUST_FORCE * deltaTime);
+            _rb.AddForce(Vector3.up * -VERTICAL_ADJUST_FORCE * (1 + transform.position.y - WATER_LEVEL + _minDistanceBelowWater) * deltaTime);
         } 
+    }
+
+    public void ApplyForce(Vector3 direction, float distance, float pullerMass)
+    {
+        // apply attraction force from lure
+        Vector3 attractionVector = direction.normalized * lureMass * _rb.mass / direction.sqrMagnitude;
+        _rb.AddForce(attractionVector * Time.fixedDeltaTime);
+    }
+
+    public float GetMass()
+    {
+        return mass;
+    }
+
+    public Vector3 GetPosition()
+    {
+        return _tf.position;
     }
 }

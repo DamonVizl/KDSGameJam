@@ -5,6 +5,7 @@ using UnityEngine;
 public class Lure : MonoBehaviour
 {
 
+    [SerializeField]
     private float _magneticMass = 1; // The mass of the lure itself
     public float MagneticMass => _magneticMass; // The mass of the lure itself
     
