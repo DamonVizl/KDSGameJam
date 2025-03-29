@@ -12,12 +12,15 @@ public class Fishing : MonoBehaviour
 {
     [SerializeField] InputManager _inputManager; 
     [SerializeField] PlayerStateMachine _playerStateMachine; //reference to the player state machine, used to transition between states.
-    [SerializeField] Transform _fishingRod;
+    [SerializeField] Transform _fishingRod, _floatCastPoint; //where to cast the float from, with the rotation
 
     //rigidbody for the float, it will be thrown out from the rod, based on the cast distance
     [SerializeField] Rigidbody _floatRigidbody; 
     //the transform to parent the float to, so it's always launched from the same position (tip of the rod)
     [SerializeField] Transform _floatParentHomePosition; 
+
+    //cast multiplier
+    [SerializeField] float _castMultiplier = 10f; //multiplier for the cast distance, used to adjust the distance the float is thrown out.
     //initial rotation of the fishing rod
     Quaternion _initialRodRot;
 
@@ -73,7 +76,7 @@ public class Fishing : MonoBehaviour
         _cts = new CancellationTokenSource();
 
         Quaternion initialRot = _fishingRod.localRotation; // get the initial rotation of the fishing rod
-        Quaternion targetRot = Quaternion.Euler(initialRot.eulerAngles.x, initialRot.eulerAngles.y, initialRot.eulerAngles.z + 30f); // rotate the fishing rod 30 degrees on the z axis
+        Quaternion targetRot = Quaternion.Euler(initialRot.eulerAngles.x - 45f, initialRot.eulerAngles.y, initialRot.eulerAngles.z ); // rotate the fishing rod 30 degrees on the z axis
         //lerp the fishing rod back over half a second
         float timer = 0.0f;
         float duration = 0.5f; // duration of the lerp
@@ -87,20 +90,21 @@ public class Fishing : MonoBehaviour
         {
             timer += Time.deltaTime;
             _fishingRod.localRotation = Quaternion.Lerp(initialRot, targetRot, timer / duration);
+
             //increment the cast distacne over time, between the mix and max distance
-            CastDistance = Mathf.Clamp(CastDistance + Time.deltaTime * 20f, _minCastDistance, _maxCastDistance);
+            CastDistance = Mathf.Clamp(CastDistance + Time.deltaTime * _castMultiplier, _minCastDistance, _maxCastDistance);
             //return to the main thread
             await Awaitable.NextFrameAsync(); 
         }
         //TODO: do cast logic with the cast distance
         CastFloat(CastDistance);
     }
+
     /// <summary>
     /// Interupts the casting process, this will stop the casting and return to the fishing state
     /// </summary>
     async void EndCast()
     {
-
         // Stop casting
         _cts?.Cancel();
        
@@ -119,7 +123,7 @@ public class Fishing : MonoBehaviour
         _playerStateMachine.TransitionToState(PlayerState.Fishing);
     }
 
-    private async void CastFloat(float castDistance)
+    private void CastFloat(float castDistance)
     {
         if(_floatRigidbody == null) {Debug.LogError("No float rigidbody assigned"); return;}
         Debug.Log("Casting float with distance: " + castDistance);
@@ -128,7 +132,9 @@ public class Fishing : MonoBehaviour
         _floatRigidbody.angularVelocity = Vector3.zero; 
         _floatRigidbody.gameObject.SetActive(true); //activate the float rigidbody
         _floatRigidbody.transform.parent = null;
-        _floatRigidbody.AddForce((transform.forward + transform.up*0.2f) * castDistance, ForceMode.Impulse); //add force to the float rigidbody in the direction of the players forward direction and up a little bit to simulate the float going out.
+        Vector3 castDir = _floatCastPoint.localRotation * Vector3.forward; //get the forward direction of the float cast point 
+       
+        _floatRigidbody.AddForce((castDir + Vector3.up*castDistance*0.01f) * castDistance, ForceMode.Impulse); //add force to the float rigidbody in the direction of the players forward direction and up a little bit to simulate the float going out.
 
     }
     #endregion
