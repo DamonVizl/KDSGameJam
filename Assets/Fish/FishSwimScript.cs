@@ -1,5 +1,4 @@
 using System;
-using UnityEditor;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using Vector3 = UnityEngine.Vector3;
@@ -69,23 +68,25 @@ public class FishSwimScript : MonoBehaviour, IAmMagnetic
         _forwardDirection = _tf.forward;
 
         if (!_isOnHook) {
-            // get distance from lure
-            // Vector3 lureVector = _lure.transform.position - _tf.position;
-
             float time = Time.time * _noiseSpeed;
             float noiseYaw = Mathf.PerlinNoise(time + _noiseOffsetYaw, _noiseOffsetYaw) - 0.5f;
             float noiseY = Mathf.PerlinNoise(time + _noiseOffsetY, _noiseOffsetY) - 0.5f;
             float noiseThrust = Mathf.PerlinNoise(time + _noiseOffsetThrust, _noiseOffsetThrust);
 
-            // float urgencyFactor = lureVector.magnitude > _lureDetectionRadius ? 0.0f : 1.0f - (lureVector.magnitude / _lureDetectionRadius);
-
             // rotate
-            if (!_isNearLure) {
-                // perlin wandering
-                _rb.AddTorque(new Vector3(0.0f, _rotationSpeed * noiseYaw * deltaTime, 0.0f));
+            if (_isNearLure && _lure != null) {
+                // turn away from lure
+                // float urgencyFactor = lureVector.magnitude > _lureDetectionRadius ? 0.0f : 1.0f - (lureVector.magnitude / _lureDetectionRadius);
+                Vector3 lureVector = _lure.transform.position - _tf.position;
+                // float lureDistance = lureVector.magnitude;
+                float lureAngle = Vector3.Angle(lureVector, _forwardDirection);
+                Vector3 lurePlaneNormalizedVector = new Vector3(lureVector.x, 0.0f, lureVector.z).normalized;
+                Vector3 directionPlaneNormalizedVector = new Vector3(_forwardDirection.x, 0.0f, _forwardDirection.z).normalized;
+                float rotation = Vector3.Cross(lurePlaneNormalizedVector, directionPlaneNormalizedVector).y > 0 ? 1.0f : -1.0f;
+                _rb.AddTorque(new Vector3(0.0f, _rotationSpeed * 10.0f * rotation * ((180 - lureAngle) / 180) * deltaTime, 0.0f));
                 _rb.AddForce(new Vector3(0.0f, _bobSpeed * noiseY, 0.0f));
             } else {
-                // TODO: turn away from lure
+                // perlin wandering
                 _rb.AddTorque(new Vector3(0.0f, _rotationSpeed * noiseYaw * deltaTime, 0.0f));
                 _rb.AddForce(new Vector3(0.0f, _bobSpeed * noiseY, 0.0f));
             }
@@ -128,7 +129,7 @@ public class FishSwimScript : MonoBehaviour, IAmMagnetic
                     Vector3 normalVector = hit.normal;
                     Vector3 horizontalVector = new Vector3(normalVector.x, 0.0f, normalVector.z).normalized;
                     float percentageOfWayOfMinDistanceAboveTowardsShore = (_minDistanceAboveTerrain - distanceToTerrain) / _minDistanceAboveTerrain;
-                    _rb.AddForce(horizontalVector * SHORE_PUSH_FORCE * (1 / (Math.Max(0.01f, 1 - percentageOfWayOfMinDistanceAboveTowardsShore))) * deltaTime);
+                    _rb.AddForce(horizontalVector * SHORE_PUSH_FORCE * (1 / Math.Max(0.01f, 1 - percentageOfWayOfMinDistanceAboveTowardsShore)) * deltaTime);
                     _rb.AddForce(Vector3.up * VERTICAL_ADJUST_FORCE  * deltaTime);
                 }
                 return;
