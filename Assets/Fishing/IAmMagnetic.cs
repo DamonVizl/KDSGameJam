@@ -6,5 +6,9 @@ public interface IAmMagnetic
     float GetMass();
     Vector3 GetPosition();
     public FishType GetFishType();
+    public void AddToNearLure(Lure lure);
+    public void RemoveFromNearLure();
+    public void SetOnHook();
+    public void RemoveFromHook();
 }
 
