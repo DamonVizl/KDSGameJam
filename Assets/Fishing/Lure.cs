@@ -39,7 +39,7 @@ public class Lure : MonoBehaviour
     public void Reset()
     {
         _magneticObjects.Clear();
-        _magneticMass = 1; //reset the mass of the lure to 1
+        _magneticMass = _lureData.LureMagneticMass; //reset the mass of the lure to 1
         _radius = _lureData.LureMagneticRadius; //reset the radius of the lure the SO value
         //reset out the child lure attach too
         _lureAttach.Reset(); 
@@ -52,7 +52,7 @@ public class Lure : MonoBehaviour
         if( magneticObject is IAmMagnetic)
         {
             Debug.Log("Magnetic object entered the trigger: " + other.name);
-            AddMagneticObject(magneticObject);
+            AddMagneticToNearLure(magneticObject);
         }
     }
 
@@ -62,17 +62,19 @@ public class Lure : MonoBehaviour
         if( magneticObject is IAmMagnetic)
         {
             Debug.Log("Magnetic object entered the trigger: " + other.name);
-            RemoveMagneticObject(magneticObject);
+            RemoveMagneticFromNearLure(magneticObject);
         }
     }
 
-    void AddMagneticObject(IAmMagnetic magneticObject)
+    void AddMagneticToNearLure(IAmMagnetic magneticObject)
     {
         _magneticObjects.Add(magneticObject);
+        magneticObject.AddToNearLure(this);
     }
-    void RemoveMagneticObject(IAmMagnetic magneticObject)
+    void RemoveMagneticFromNearLure(IAmMagnetic magneticObject)
     {
         _magneticObjects.Remove(magneticObject);
+        magneticObject.RemoveFromNearLure();
     }
     /// <summary>
     /// when the magnetic object is close enough, add it's mass to the lure's mass.
@@ -85,6 +87,7 @@ public class Lure : MonoBehaviour
         {
             _magneticMass += magneticObject.GetMass();
             UpdateRadius(magneticObject.GetMass());
+            magneticObject.SetOnHook(); //set the magnetic object on the hook
             Debug.Log("Magnetic object attached to lure: " + magneticObject + " mass: " + magneticObject.GetMass());
             Debug.Log("New lure mass: " + _magneticMass);
         } 
@@ -98,7 +101,7 @@ public class Lure : MonoBehaviour
         if(_magneticObjects.Contains(magneticObject))
         {
             Debug.Log("Magnetic object removed from lure: " + magneticObject + " mass: " + magneticObject.GetMass());
-
+            magneticObject.RemoveFromHook(); //remove the magnetic object from the hook
              _magneticMass -= magneticObject.GetMass();
              UpdateRadius(-magneticObject.GetMass());
         }

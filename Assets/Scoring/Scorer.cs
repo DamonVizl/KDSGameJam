@@ -21,6 +21,8 @@ public class Scorer
         {
             BiggestFishDictionary[fish.GetFishType()] = fish; 
             OnFishAddedToCollection?.Invoke(fish.GetFishType(), score);
+            //Push something to UI to update the collection of fish
+            Debug.Log("Added fish to collection: " + fish.GetFishType() + " " + fish.GetMass());
 
         }
         //only add the fish if its bigger than the current fish in the dictionary
@@ -28,10 +30,11 @@ public class Scorer
         {
             BiggestFishDictionary[fish.GetFishType()] = fish; 
             OnFishAddedToCollection?.Invoke(fish.GetFishType(), score);
+            //Push something to UI to update the collection of fish
+            Debug.Log("Added fish to collection: " + fish.GetFishType() + " " + fish.GetMass());
         }
 
-        //Push something to UI to update the collection of fish
-        Debug.Log("Added fish to collection: " + fish.GetFishType() + " " + fish.GetMass());
+
     }
     public float ScoreAllFish(List<IAmMagnetic> allFish)
     {
