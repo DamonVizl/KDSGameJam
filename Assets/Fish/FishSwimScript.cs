@@ -160,15 +160,6 @@ public class FishSwimScript : MonoBehaviour, IAmMagnetic
     {
         return _tf.position;
     }
-    
-    /// <summary>
-    /// calculate the magnitude of the local scale of the fish, used for scoring. 
-    /// </summary>
-    /// <returns></returns>
-    public float GetLocalScaleMagnitude()
-    {
-        return _tf.localScale.magnitude;
-    }
 
     public FishType GetFishType()
     {
