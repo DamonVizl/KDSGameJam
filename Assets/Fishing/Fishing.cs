@@ -16,7 +16,6 @@ public class Fishing : MonoBehaviour
     [SerializeField] Transform _fishingRod, _floatCastPoint; //where to cast the float from, with the rotation
     
     CameraSwitcher _cameraSwitcher;
-
     [SerializeField] FishingData _fishingData; //reference to the fishing data, used to get the cast distance and other data.
 
     [SerializeField] FishingLineRenderer _fishingLineRenderer;
@@ -127,7 +126,7 @@ public class Fishing : MonoBehaviour
         _cts?.Cancel();
        
         //lerp the fishing rod back over half a second
-         Quaternion initialRot = _fishingRod.localRotation; // get the initial rotation of the fishing rod
+        Quaternion initialRot = _fishingRod.localRotation; // get the initial rotation of the fishing rod
        //Quaternion targetRot = Quaternion.Euler(initialRot.eulerAngles.x, initialRot.eulerAngles.y, initialRot.eulerAngles.z - 30f); // rotate the fishing rod back to the original position
         float timer = 0.0f;
         float duration = 0.2f; // duration of the lerp
@@ -161,7 +160,11 @@ public class Fishing : MonoBehaviour
     private void RecallLine()
     {
         //Clear the list of IAmMagnetic objects on the lure.
+        _lure.Score();
         _lure.Reset();
+
+        //score the fish in the collection
+        //_scorer.AddFishToCollectionIfBigger()); //add the fish to the collection if its bigger than the current fish in the collection
 
         //recall the float
         _floatRigidbody.transform.parent = _floatParentHomePosition; 
@@ -169,6 +172,7 @@ public class Fishing : MonoBehaviour
         _floatRigidbody.gameObject.SetActive(false); 
         //return to the moving state
         _playerStateMachine.TransitionToState(PlayerState.Moving);
+        
     }
 
     #endregion

@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: Fish_Salmon
   m_EditorClassIdentifier: 
   fishPrefab: {fileID: 8222310034206454829, guid: 7a1da3e8ed5f05f4da7195780562aae7, type: 3}
+  fishType: 0
   upperSpawnHeight: -3
   lowerSpawnHeight: -15
   minFishScale: 0.2
   maxFishScale: 1
   fishSpawnAttempts: 50
   schoolOfFish: 1
-  mass: 1
+  mass: 6

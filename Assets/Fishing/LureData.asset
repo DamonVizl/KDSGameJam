@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72d624289a1ae0049b6a945b954a934b, type: 3}
   m_Name: LureData
   m_EditorClassIdentifier: 
-  LureMagneticRadius: 10
+  LureMagneticRadius: 30
   LureAttachedRadius: 3
-  LureMagneticMass: 1
+  LureMagneticMass: 10

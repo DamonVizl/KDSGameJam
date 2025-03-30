@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: Fish_Clown
   m_EditorClassIdentifier: 
   fishPrefab: {fileID: 8222310034206454829, guid: 3befe51a8d6602d49aaa206f6d5a30f9, type: 3}
+  fishType: 0
   upperSpawnHeight: 0
   lowerSpawnHeight: -8
   minFishScale: 0.2
   maxFishScale: 0.3
   fishSpawnAttempts: 40
   schoolOfFish: 1
+  mass: 5

@@ -13,7 +13,11 @@ MonoBehaviour:
   m_Name: Fish_Tropical_GreenBands
   m_EditorClassIdentifier: 
   fishPrefab: {fileID: 8222310034206454829, guid: 8a5a9a141f62934489520e7b7bc7857e, type: 3}
+  fishType: 0
   upperSpawnHeight: -3
   lowerSpawnHeight: -15
   minFishScale: 0.2
   maxFishScale: 1
+  fishSpawnAttempts: 100
+  schoolOfFish: 0
+  mass: 3

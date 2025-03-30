@@ -6,6 +6,7 @@ using UnityEngine.UIElements;
 [RequireComponent(typeof(SphereCollider))]
 public class Lure : MonoBehaviour
 {
+    Scorer _scorer = new Scorer(); //reference to the scorer, used to score the fish caught.
     [SerializeField] public LureData _lureData; //refernece to SO for initial values
     private LureAttach _lureAttach; 
     [SerializeField] private float _magneticMass = 1.0f; // The mass of the lure itself
@@ -20,7 +21,7 @@ public class Lure : MonoBehaviour
         _radius = _lureData.LureMagneticRadius; 
         _lureAttach = GetComponentInChildren<LureAttach>();
     }
-    void Update()
+    void FixedUpdate()
     {   
         //iterate through the list and apply force to each of the magnetic objects that are close enough. 
         foreach(var magneticObject in _magneticObjects)
@@ -108,5 +109,10 @@ public class Lure : MonoBehaviour
         _radius += mass* 1f; 
         _collider.radius = _radius;
         Debug.Log("New radius: " + _collider.radius);   
+    }
+    public void Score()
+    {
+        Debug.Log("trying to score fish");
+        _scorer.ScoreAllFish(_magneticObjects);
     }
 }
