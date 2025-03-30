@@ -10,9 +10,11 @@ public class InputManager : MonoBehaviour
 
     [SerializeField] private PlayerInput _input;
     private InputAction _castIA, _recallIA, _reelIA;
+    private InputAction _floatControl;
 
     #region Events
     public Action OnCastPressed, OnCastReleased,OnRecallPressed, OnReelPressed, OnReelReleased;
+    public Action<Vector2> OnFloatControlPressed;
     #endregion
 
     void OnEnable()
@@ -43,6 +45,10 @@ public class InputManager : MonoBehaviour
         _reelIA = _input.actions["Reel"];
         _reelIA.performed += c => OnReelPressed?.Invoke();
         _reelIA.canceled += c => OnReelReleased?.Invoke();
+
+        _floatControl = _input.actions["FloatControl"];
+        _floatControl.performed += c => OnFloatControlPressed?.Invoke(c.ReadValue<Vector2>());
+        _floatControl.canceled += c => OnFloatControlPressed?.Invoke(Vector2.zero);
     }
 
     private void CleanUpInputActions()
@@ -54,6 +60,9 @@ public class InputManager : MonoBehaviour
 
         _reelIA.performed -= c => OnReelPressed?.Invoke();
         _reelIA.canceled -= c => OnReelReleased?.Invoke();
+
+        _floatControl.performed -= c => OnFloatControlPressed?.Invoke(c.ReadValue<Vector2>());
+        _floatControl.canceled -= c => OnFloatControlPressed?.Invoke(Vector2.zero);
     }
 
 

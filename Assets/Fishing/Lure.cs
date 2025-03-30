@@ -13,12 +13,15 @@ public class Lure : MonoBehaviour
     [SerializeField] private float _radius = 20f; // The radius of the lure's magnetic field
     public float MagneticMass => _magneticMass; // The mass of the lure itself
     SphereCollider _collider;
+    GameObject _sphereGraphicsForMagneticField;
     
     List<IAmMagnetic> _magneticObjects = new List<IAmMagnetic>();
     void Start()
     {
         _collider = GetComponent<SphereCollider>();
         _radius = _lureData.LureMagneticRadius; 
+        _sphereGraphicsForMagneticField = GetComponentInChildren<MeshRenderer>().gameObject;
+        _sphereGraphicsForMagneticField.transform.localScale = new Vector3(_radius, _radius, _radius); //set the scale of the sphere to the radius of the lure
         _lureAttach = GetComponentInChildren<LureAttach>();
     }
     void FixedUpdate()
@@ -41,6 +44,8 @@ public class Lure : MonoBehaviour
         _magneticObjects.Clear();
         _magneticMass = 1; //reset the mass of the lure to 1
         _radius = _lureData.LureMagneticRadius; //reset the radius of the lure the SO value
+        _sphereGraphicsForMagneticField.transform.localScale = new Vector3(_radius, _radius, _radius); //set the scale of the sphere to the radius of the lure
+
         //reset out the child lure attach too
         _lureAttach.Reset(); 
     }
@@ -107,6 +112,8 @@ public class Lure : MonoBehaviour
     void UpdateRadius(float mass)
     {
         _radius += mass* 1f; 
+        _sphereGraphicsForMagneticField.transform.localScale = new Vector3(_radius, _radius, _radius); //set the scale of the sphere to the radius of the lure
+
         _collider.radius = _radius;
         Debug.Log("New radius: " + _collider.radius);   
     }
