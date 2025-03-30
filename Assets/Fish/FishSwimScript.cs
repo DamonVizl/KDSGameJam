@@ -154,7 +154,7 @@ public class FishSwimScript : MonoBehaviour, IAmMagnetic
     public void ApplyForce(Vector3 direction, float distance, float pullerMass)
     {
         // apply attraction force from lure
-        Vector3 attractionVector = direction.normalized * pullerMass * _rb.mass / direction.sqrMagnitude;
+        Vector3 attractionVector = 1000.0f * direction.normalized * pullerMass * _rb.mass / direction.sqrMagnitude;
         _rb.AddForce(attractionVector * Time.fixedDeltaTime);
     }
 
