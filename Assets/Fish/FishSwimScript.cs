@@ -23,11 +23,9 @@ public class FishSwimScript : MonoBehaviour, IAmMagnetic
     
     private Vector3 _forwardDirection;
 
-    private Vector3 lurePoint = new Vector3(50.0f, -2.0f, -60.0f);
-    private float lureMass = 400.0f;
-    private float lureCollisionDistance = 0.2f;
-
-    private bool isConnected = false;
+    private Lure _lure;
+    private bool _isOnHook = false;
+    private bool _isNearLure = false;
 
     Transform _tf;
     Rigidbody _rb;   
@@ -58,7 +56,7 @@ public class FishSwimScript : MonoBehaviour, IAmMagnetic
     {
         MoveFish();
 
-        if (!isConnected) {
+        if (!_isOnHook) {
             StayAboveGround();
             StayUnderWater();
         }
@@ -71,18 +69,9 @@ public class FishSwimScript : MonoBehaviour, IAmMagnetic
         // fish propels itself in model forward direction only
         _forwardDirection = _tf.forward;
 
-        if (!isConnected) {
+        if (!_isOnHook) {
             // get distance from lure
-            Vector3 lureVector = lurePoint - _tf.position;
-            float lureDistance = lureVector.magnitude;
-
-            // disconnect from physics if attached to lure
-            // if (lureDistance < lureCollisionDistance) {
-            //     isConnected = true;
-            //     _rb.isKinematic = true;
-            //     _rb.detectCollisions = false;
-            //     return;
-            // }
+            Vector3 lureVector = _lure.transform.position - _tf.position;
 
             float time = Time.time * _noiseSpeed;
             float noiseYaw = Mathf.PerlinNoise(time + _noiseOffsetYaw, _noiseOffsetYaw) - 0.5f;
@@ -173,7 +162,7 @@ public class FishSwimScript : MonoBehaviour, IAmMagnetic
     public void ApplyForce(Vector3 direction, float distance, float pullerMass)
     {
         // apply attraction force from lure
-        Vector3 attractionVector = direction.normalized * lureMass * _rb.mass / direction.sqrMagnitude;
+        Vector3 attractionVector = direction.normalized * pullerMass * _rb.mass / direction.sqrMagnitude;
         _rb.AddForce(attractionVector * Time.fixedDeltaTime);
     }
 
@@ -190,5 +179,24 @@ public class FishSwimScript : MonoBehaviour, IAmMagnetic
     public FishType GetFishType()
     {
         return FishType;
+    }
+
+    public void AddToNearLure(Lure lure) {
+        _lure = lure;
+        _isNearLure = true;
+    }
+
+    public void RemoveFromNearLure() {
+        _isNearLure = false;
+    }
+
+    public void SetOnHook()
+    {
+        _isOnHook = true;
+    }
+
+    public void RemoveFromHook()
+    {
+        _isOnHook = false;
     }
 }
