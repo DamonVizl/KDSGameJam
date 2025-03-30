@@ -44,6 +44,7 @@ public class Scorer
             float score = fish.GetMass();//GetFishScore(fish.GetMass(), fish.GetLocalScaleMagnitude());
             AddFishToCollectionIfBigger(fish, score);
             totalScore += score;
+            fish.DestroyFish();
         }
         Debug.Log("Total score: " + totalScore);
         return totalScore;

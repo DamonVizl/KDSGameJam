@@ -192,4 +192,9 @@ public class FishSwimScript : MonoBehaviour, IAmMagnetic
     {
         _isOnHook = false;
     }
+
+    public void DestroyFish()
+    {
+        Destroy(this.gameObject);
+    }
 }

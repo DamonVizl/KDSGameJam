@@ -186,7 +186,7 @@ public class Fishing : MonoBehaviour
         _floatRigidbody.AddForce(direction * _fishingData.ReelStrengthMultiplier, ForceMode.Impulse); 
 
         //check if the float is close enough to the player to catch the fish
-        if(Vector3.Distance(this.transform.position, _floatRigidbody.transform.position) < 3f)
+        if(Vector3.Distance(this.transform.position, _floatRigidbody.transform.position) < 5.0f)
         {
             //catch the fish and return to the moving state
             Debug.Log("Line has been fully reeled in");
