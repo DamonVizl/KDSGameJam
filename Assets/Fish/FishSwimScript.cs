@@ -7,6 +7,7 @@ using Vector3 = UnityEngine.Vector3;
 [RequireComponent(typeof(Rigidbody))]
 public class FishSwimScript : MonoBehaviour, IAmMagnetic
 {
+    public FishType FishType; 
     [SerializeField] float _swimSpeed = 300.0f;
     [SerializeField] float _rotationSpeed = 1000.0f;
     [SerializeField] float _bobSpeed = 3.0f;
@@ -184,5 +185,10 @@ public class FishSwimScript : MonoBehaviour, IAmMagnetic
     public Vector3 GetPosition()
     {
         return _tf.position;
+    }
+
+    public FishType GetFishType()
+    {
+        return FishType;
     }
 }

@@ -13,8 +13,11 @@ MonoBehaviour:
   m_Name: Fish_Puffer
   m_EditorClassIdentifier: 
   fishPrefab: {fileID: 8222310034206454829, guid: f0053979c706faa45890db074f693667, type: 3}
+  fishType: 0
   upperSpawnHeight: -4
   lowerSpawnHeight: -6
   minFishScale: 0.8
   maxFishScale: 1.2
+  fishSpawnAttempts: 100
   schoolOfFish: 0
+  mass: 7

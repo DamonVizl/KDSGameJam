@@ -111,6 +111,7 @@ public class FishSpawner : MonoBehaviour
         var fishSwimScript = instance.GetComponent<FishSwimScript>();
         if (fishSwimScript != null) {
             fishSwimScript.mass = fishData.mass * fishScale;
+            fishSwimScript.FishType = fishData.fishType;
         }
     }
 
@@ -120,3 +121,4 @@ public class FishSpawner : MonoBehaviour
         Gizmos.DrawWireCube(gridCenter, new Vector3(gridWidth, 0, gridDepth));
     }
 }
+

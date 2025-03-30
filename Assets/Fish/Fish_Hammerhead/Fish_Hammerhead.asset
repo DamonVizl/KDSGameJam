@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: Fish_Hammerhead
   m_EditorClassIdentifier: 
   fishPrefab: {fileID: 8222310034206454829, guid: 3fc0f8b8db4f8e54e9a6aefb9beb97b9, type: 3}
+  fishType: 0
   upperSpawnHeight: -3
   lowerSpawnHeight: -8
   minFishScale: 1
   maxFishScale: 3
   fishSpawnAttempts: 5
   schoolOfFish: 0
-  mass: 1
+  mass: 9

@@ -6,6 +6,9 @@ public class FishSpawnData : ScriptableObject
     [Header("Prefab Settings")]
     public GameObject fishPrefab;
 
+    [Header("Fish Type")]
+    public FishType fishType;
+
     [Header("Spawn Height Range")]
     // Allowed spawn heights (for example, lower: -100, upper: -3)
     public int upperSpawnHeight = -3;
@@ -23,5 +26,21 @@ public class FishSpawnData : ScriptableObject
 
     [Header("Fish Mass")]
     public float mass = 1.0f;
-    
+
+
+  
+
+}
+public enum  FishType
+{
+    Grouper,
+    Puffer,
+    Swordfish,
+    TropicalGreen,
+    TropicalOrange,
+    Clown,
+    Shark, 
+    Goldfish,
+    Salmon,
+    Hammerhead,
 }
