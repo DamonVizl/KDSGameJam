@@ -16,7 +16,6 @@ public class FishSwimScript : MonoBehaviour, IAmMagnetic
 
     [SerializeField] float _linearDragCoefficient = 10.0f;
     [SerializeField] float _angularDragCoefficient = 100.0f;
-    [SerializeField] float _lureDetectionRadius = 5.0f;
 
     [SerializeField] float _minDistanceAboveTerrain = 1.0f;
     [SerializeField] float _minDistanceBelowWater = 1.0f;
@@ -71,35 +70,28 @@ public class FishSwimScript : MonoBehaviour, IAmMagnetic
 
         if (!_isOnHook) {
             // get distance from lure
-            Vector3 lureVector = _lure.transform.position - _tf.position;
+            // Vector3 lureVector = _lure.transform.position - _tf.position;
 
             float time = Time.time * _noiseSpeed;
             float noiseYaw = Mathf.PerlinNoise(time + _noiseOffsetYaw, _noiseOffsetYaw) - 0.5f;
             float noiseY = Mathf.PerlinNoise(time + _noiseOffsetY, _noiseOffsetY) - 0.5f;
             float noiseThrust = Mathf.PerlinNoise(time + _noiseOffsetThrust, _noiseOffsetThrust);
 
-            float urgencyFactor = lureVector.magnitude > _lureDetectionRadius ? 0.0f : 1.0f - (lureVector.magnitude / _lureDetectionRadius);
+            // float urgencyFactor = lureVector.magnitude > _lureDetectionRadius ? 0.0f : 1.0f - (lureVector.magnitude / _lureDetectionRadius);
 
             // rotate
-            if (lureVector.magnitude > _lureDetectionRadius) {
+            if (!_isNearLure) {
                 // perlin wandering
                 _rb.AddTorque(new Vector3(0.0f, _rotationSpeed * noiseYaw * deltaTime, 0.0f));
                 _rb.AddForce(new Vector3(0.0f, _bobSpeed * noiseY, 0.0f));
             } else {
-                if (Random.Range(0, _lureDetectionRadius) > lureVector.magnitude) {
-                    // TODO: turn away from lure
-                    // Vector3 lureXZVector = new Vector3(lureVector.x, 0.0f, lureVector.z).normalized;
-                    // Vector3 directionXZVector = new Vector3(_forwardDirection.x, 0.0f, _forwardDirection.z).normalized;
-                    _rb.AddTorque(new Vector3(0.0f, 3 * _rotationSpeed * deltaTime, 0.0f));
-                } else {
-                    // perlin wandering
-                    _rb.AddTorque(new Vector3(0.0f, _rotationSpeed * noiseYaw * deltaTime, 0.0f));
-                    _rb.AddForce(new Vector3(0.0f, _bobSpeed * noiseY, 0.0f));
-                }
+                // TODO: turn away from lure
+                _rb.AddTorque(new Vector3(0.0f, _rotationSpeed * noiseYaw * deltaTime, 0.0f));
+                _rb.AddForce(new Vector3(0.0f, _bobSpeed * noiseY, 0.0f));
             }
 
             // apply thrust in forward direction
-            _rb.AddForce(_forwardDirection * _swimSpeed * deltaTime * (1 + urgencyFactor + noiseThrust));
+            _rb.AddForce(_forwardDirection * _swimSpeed * deltaTime * (1 + noiseThrust));
 
             // apply linear drag
             _rb.AddForce(-1.0f * _linearDragCoefficient * _rb.linearVelocity.sqrMagnitude * deltaTime * _rb.linearVelocity.normalized);
