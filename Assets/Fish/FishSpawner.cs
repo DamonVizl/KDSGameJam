@@ -1,9 +1,10 @@
-using UnityEngine;
-using UnityEngine.Serialization;
 #if UNITY_EDITOR
+
+using UnityEngine;
+
 using UnityEditor;
 using UnityEditor.SceneManagement;
-#endif
+
 
 [ExecuteInEditMode]
 public class FishSpawner : MonoBehaviour
@@ -73,14 +74,13 @@ public class FishSpawner : MonoBehaviour
             }
         }
 
-#if UNITY_EDITOR
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
-#endif
+
     }
 
     private void PlacePrefabAt(Vector3 position, FishSpawnData fishData)
     {
-#if UNITY_EDITOR
+
         Debug.Log($"Placing fish {fishData.fishPrefab.name} at position {position}.");
 
         if (fishData.schoolOfFish)
@@ -92,7 +92,7 @@ public class FishSpawner : MonoBehaviour
             }
         } else
             PlacePrefab(position, fishData);
-#endif
+
     }
 
     private void PlacePrefab(Vector3 position, FishSpawnData fishData)
@@ -122,3 +122,4 @@ public class FishSpawner : MonoBehaviour
     }
 }
 
+#endif

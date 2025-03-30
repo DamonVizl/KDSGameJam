@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using Mono.Cecil.Cil;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 [RequireComponent(typeof(SphereCollider))]
 public class Lure : MonoBehaviour

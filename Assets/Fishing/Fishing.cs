@@ -1,9 +1,6 @@
 using UnityEngine;
-using System.Threading.Tasks;
-using Unity.VisualScripting.Antlr3.Runtime;
 using System.Threading;
 using System;
-using Codice.Client.Common.GameUI;
 
 /// <summary>
 /// Handles the fishing behaviour
