@@ -10,5 +10,6 @@ public interface IAmMagnetic
     public void RemoveFromNearLure();
     public void SetOnHook();
     public void RemoveFromHook();
+    public void DestroyFish();
 }
 
