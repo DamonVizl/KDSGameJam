@@ -1,3 +1,5 @@
+using System;
+using UnityEditor;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using Vector3 = UnityEngine.Vector3;
@@ -35,7 +37,7 @@ public class FishSwimScript : MonoBehaviour, IAmMagnetic
 
     const float WATER_LEVEL = 0f;
     const float TERRAIN_CHECK_DISTANCE = 100f;
-    const float VERTICAL_ADJUST_FORCE = 10.0f;
+    const float VERTICAL_ADJUST_FORCE = 20.0f;
     const float SHORE_PUSH_FORCE = 500.0f;
 
     void Start()
@@ -54,8 +56,11 @@ public class FishSwimScript : MonoBehaviour, IAmMagnetic
     void FixedUpdate()
     {
         MoveFish();
-        StayAboveGround();
-        StayUnderWater();
+
+        if (!isConnected) {
+            StayAboveGround();
+            StayUnderWater();
+        }
     }
 
     private void MoveFish()
@@ -71,12 +76,12 @@ public class FishSwimScript : MonoBehaviour, IAmMagnetic
             float lureDistance = lureVector.magnitude;
 
             // disconnect from physics if attached to lure
-            if (lureDistance < lureCollisionDistance) {
-                isConnected = true;
-                _rb.isKinematic = true;
-                _rb.detectCollisions = false;
-                return;
-            }
+            // if (lureDistance < lureCollisionDistance) {
+            //     isConnected = true;
+            //     _rb.isKinematic = true;
+            //     _rb.detectCollisions = false;
+            //     return;
+            // }
 
             float time = Time.time * _noiseSpeed;
             float noiseYaw = Mathf.PerlinNoise(time + _noiseOffsetYaw, _noiseOffsetYaw) - 0.5f;
@@ -116,27 +121,49 @@ public class FishSwimScript : MonoBehaviour, IAmMagnetic
 
     private void StayAboveGround()
     {
-        if (Physics.Raycast(transform.position + Vector3.up * _minDistanceAboveTerrain, Vector3.down, out var hit, TERRAIN_CHECK_DISTANCE)) {
+        // cast a ray up to check if we're under the terrain
+        if (Physics.Raycast(_tf.position, Vector3.up, out var upHit, TERRAIN_CHECK_DISTANCE)) {
+            if (upHit.collider.CompareTag("Terrain")) {
+                // we're under the terrain - teleport up
+                _tf.position = upHit.point + Vector3.up * 0.1f;
+                return;
+            }
+        }
+
+        // cast a ray down to check if we're too close to the terrain
+        if (Physics.Raycast(_tf.position + Vector3.up * 0.01f, Vector3.down, out var hit, TERRAIN_CHECK_DISTANCE)) {
             if (!hit.collider) {
-                // this probably means the fish has ended up below the terrain. To avoid issues, just destroy.
-                Destroy(this);
-            } else if (hit.collider.CompareTag("Terrain")) {
-                float targetY = hit.point.y + _minDistanceAboveTerrain;
-                if (transform.position.y < targetY) {
+                // didn't hit anything? teleport to just below water
+                _tf.position = new Vector3(_tf.position.x, WATER_LEVEL - 0.1f, _tf.position.z);
+                return;
+            }
+            
+            if (hit.collider.CompareTag("Terrain")) {
+                float distanceToTerrain = _tf.position.y - hit.point.y;
+                if (_tf.position.y < hit.point.y + _minDistanceAboveTerrain) {
+                    // found terrain too close - apply force down
                     float deltaTime = Time.fixedDeltaTime;
                     Vector3 normalVector = hit.normal;
                     Vector3 horizontalVector = new Vector3(normalVector.x, 0.0f, normalVector.z).normalized;
-                    _rb.AddForce(horizontalVector * SHORE_PUSH_FORCE * deltaTime);
-                    _rb.AddForce(Vector3.up * VERTICAL_ADJUST_FORCE * deltaTime);
+                    float percentageOfWayOfMinDistanceAboveTowardsShore = (_minDistanceAboveTerrain - distanceToTerrain) / _minDistanceAboveTerrain;
+                    _rb.AddForce(horizontalVector * SHORE_PUSH_FORCE * (1 / (Math.Max(0.01f, 1 - percentageOfWayOfMinDistanceAboveTowardsShore))) * deltaTime);
+                    _rb.AddForce(Vector3.up * VERTICAL_ADJUST_FORCE  * deltaTime);
                 }
+                return;
             }
         }
+
+        _tf.position = new Vector3(_tf.position.x, WATER_LEVEL - 0.1f, _tf.position.z);
     }
 
     private void StayUnderWater()
     {
-        if (transform.position.y > WATER_LEVEL - _minDistanceBelowWater)
+        if (_tf.position.y > WATER_LEVEL) {
+            // above water, fix immediately by teleporting below water
+            _tf.position = new Vector3(_tf.position.x, WATER_LEVEL - 0.1f, _tf.position.z);
+        } else if (_tf.position.y > WATER_LEVEL - _minDistanceBelowWater)
         {
+            // below water but above minDistance, apply downward force
             float deltaTime = Time.fixedDeltaTime;
             _rb.AddForce(Vector3.up * -VERTICAL_ADJUST_FORCE * (1 + transform.position.y - WATER_LEVEL + _minDistanceBelowWater) * deltaTime);
         } 
@@ -144,7 +171,6 @@ public class FishSwimScript : MonoBehaviour, IAmMagnetic
 
     public void ApplyForce(Vector3 direction, float distance, float pullerMass)
     {
-        Debug.Log("Applying force to fish: " + gameObject.name);    
         // apply attraction force from lure
         Vector3 attractionVector = direction.normalized * lureMass * _rb.mass / direction.sqrMagnitude;
         _rb.AddForce(attractionVector * Time.fixedDeltaTime);

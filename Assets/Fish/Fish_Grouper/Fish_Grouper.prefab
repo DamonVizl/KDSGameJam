@@ -55,8 +55,8 @@ MonoBehaviour:
   _linearDragCoefficient: 10
   _angularDragCoefficient: 100
   _lureDetectionRadius: 5
-  _minDistanceAboveTerrain: 2
-  _minDistanceBelowWater: 2
+  _minDistanceAboveTerrain: 0.7
+  _minDistanceBelowWater: 0.7
 --- !u!54 &3995942909073495266
 Rigidbody:
   m_ObjectHideFlags: 0
