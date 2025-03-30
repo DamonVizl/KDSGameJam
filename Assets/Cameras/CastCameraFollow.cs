@@ -1,23 +1,34 @@
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class CastCameraFollow : MonoBehaviour
 {
-    [SerializeField] private Transform _target;
-    [SerializeField] private Vector3 _offset = new Vector3(0f, 5f, -10f);
-    [SerializeField] private float _followSpeed = 10f;
-    [SerializeField] private Vector3 _velocity = Vector3.zero;
-    [SerializeField] private float _rotationSpeed = 5f;
+    public Transform target;
+    public Transform player;
+    public Vector3 offset = new Vector3(0f, 5f, -10f);
+    public float followSpeed = 10f;
+    private Vector3 velocity = Vector3.zero;
+    public float rotationSpeed = 5f;
+    public float transitionDistance = 20f;
+    public float blendFactor = 0.3f;
 
     void LateUpdate()
     {
-        if (_target == null)
+        if (target == null || player == null)
             return;
 
-        Vector3 desiredPosition = _target.position + _offset;
-        transform.position = Vector3.SmoothDamp(transform.position, desiredPosition, ref _velocity, 1f / _followSpeed);
+        Vector3 desiredPosition = target.position + offset;
+        transform.position = Vector3.SmoothDamp(transform.position, desiredPosition, ref velocity, 1f / followSpeed);
 
-        Quaternion desiredRotation = Quaternion.LookRotation(_target.position - transform.position);
-        transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation, _rotationSpeed * Time.deltaTime);
+        float distance = Vector3.Distance(player.position, target.position);
+        float t = Mathf.Clamp01(distance / transitionDistance);
+
+        Vector3 lookDirectionA = Vector3.Lerp((player.position - transform.position).normalized, (target.position - transform.position).normalized, t).normalized;
+        var castDirection = target.position - player.position;
+        Vector3 lookDirectionB = Vector3.Lerp(castDirection, -castDirection, t).normalized;
+
+        Vector3 blendedLookDirection = Vector3.Lerp(lookDirectionA, lookDirectionB, blendFactor).normalized;
+
+        Quaternion desiredRotation = Quaternion.LookRotation(blendedLookDirection);
+        transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation, rotationSpeed * Time.deltaTime);
     }
 }
