@@ -8,9 +8,10 @@ public class Scorer
     public Dictionary<FishType, IAmMagnetic> BiggestFishDictionary;
     public static Action<float> OnScored; 
     public static Action<FishType, float> OnFishAddedToCollection;
+    //public static Action<Dictionary<FishType, IAmMagnetic>> OnFishDictionarySetup; 
     public Scorer()
     {
-        BiggestFishDictionary = new Dictionary<FishType, IAmMagnetic>();
+            BiggestFishDictionary = new Dictionary<FishType, IAmMagnetic>();    
     }
     public void AddFishToCollectionIfBigger(IAmMagnetic fish, float score)
     {
